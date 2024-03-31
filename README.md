@@ -1,1 +1,1 @@
-# basicgptonAI
+# BASIC GPT
