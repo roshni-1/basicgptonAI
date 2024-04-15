@@ -27,8 +27,8 @@ To run the chat application locally:
 1. Run the Flask app using `python app.py`.
 2. Access the chat application in your web browser at the specified address (e.g., `http://localhost:5000`).
 
-## Contributors
-- [Roshni Yadav]
+## Contributor
+- Roshni Yadav
 
 ## Acknowledgments
 - This project is inspired by the work of OpenAI and the Hugging Face team in developing state-of-the-art natural language processing models.
