@@ -23,7 +23,7 @@ The project is currently in development. The chat application is able to generat
 ## Usage
 To run the chat application locally:
 1. Download the dataset.
-2. Run the notebook and python codes related to model training and fine-tuning. 
+2. Run the notebook and python codes related to model training and fine-tuning (Change the path as per your directory path). 
 1. Run the Flask app using `python app.py`.
 2. Access the chat application in your web browser at the specified address (e.g., `http://localhost:5000`).
 
