@@ -19,10 +19,10 @@ generation_params = {
     "top_p": 0.5,
     "top_k": 40,
     "num_return_sequences": 1,
-    "pad_token_id": tokenizer.eos_token_id,  # Set pad token id to eos token id
-    "eos_token_id": tokenizer.eos_token_id,  # Specify end-of-sentence token id
-    "do_sample": True,  # Disable sampling
-    "early_stopping": False  # Stop generation when eos_token_id is predicted
+    "pad_token_id": tokenizer.eos_token_id,  
+    "eos_token_id": tokenizer.eos_token_id,  
+    "do_sample": True, 
+    "early_stopping": False  
 }
 
 # route to html page
@@ -43,7 +43,7 @@ def get_response():
         # Tokenizing the input prompt
         input_ids = tokenizer.encode(prompt, return_tensors="pt")
 
-        # Generate response
+        # Generating response
         output_sequences = model.generate(input_ids=input_ids, **generation_params)
         generated_text = tokenizer.decode(output_sequences[0], skip_special_tokens=True)
 
