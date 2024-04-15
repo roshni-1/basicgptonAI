@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DemoGPT-1.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: black;
+        }
+        #sidebar {
+            background-color: #f0f0f0;
+            width: 200px;
+            height: 100%;
+            position: fixed;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: auto;
+            left: 0;
+        }
+        #main {
+            padding: 20px;
+            padding-top: 0;
+            height: calc(100vh - 40px);
+            overflow: auto;
+            text-align: justify;
+            position: relative;
+            margin-left: 200px;
+        }
+        #header {
+            font-size: 20px;
+            color: black;
+            padding: 10px 0;
+        }
+        #input-area {
+            position: fixed;
+            bottom: 0;
+            left: 200px; 
+            right: 0;
+            background: white;
+            padding: 10px;
+        }
+        input[type="text"] {
+            width: calc(100% - 60px); /* Adjusted width */
+            padding: 10px 30px 10px 10px; /* Added padding for the arrow icon */
+            border: 1px solid lightgray;
+            border-radius: 5px;
+            margin-right: 10px;
+            position: relative;
+            text-align: justify;
+        }
+        #send-icon {
+            width: 30px;
+            height: 30px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+        .new-chat {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: bold; /* Bold text */
+        }
+        .bi {
+            margin-right: 5px;
+            font-size: 20px;
+        }
+        .bi-pencil-square {
+            margin-left: auto;
+        }
+        .center-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+        }
+        #how-can-help {
+            text-align: center;
+            font-weight: bold;
+            display: block;
+            position: absolute;
+            top: calc(50% + 30px); 
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .user-message {
+            text-align: justify;
+            margin-bottom: 10px;
+        }
+        .bot-message {
+            text-align: justify;
+            margin-bottom: 10px;
+        }
+        .message-text {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-icon {
+            float: left;
+            margin-right: 5px;
+            width: 20px; 
+            height: 20px; 
+        }
+        .bot-icon {
+            float: left;
+            margin-right: 5px;
+            width: 20px; 
+            height: 20px; 
+        }
+        #question-list {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="new-chat">
+            <i class="bi bi-brilliance"></i><span onclick="window.open(window.location.href)">New Chat</span><i class="bi bi-pencil-square"></i>
+        </div>
+        <ul id="question-list">
+        </ul>
+    </div>
+    <div id="main">
+        <div id="header">DemoGPT-1.0</div>
+        <div id="chat">
+            <i class="bi bi-brilliance center-icon"></i> <!-- Center icon -->
+            <span id="how-can-help">How can I help you today?</span>
+            <div id="chat-body"></div>
+        </div>
+        <div id="input-area">
+            <form id="chat-form">
+                <input type="text" id="user-input" placeholder="How can I help you today?">
+                <div id="send-icon" class="bi bi-arrow-up"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById("chat-form");
+            const inputField = document.getElementById('user-input');
+            const howCanHelp = document.getElementById('how-can-help');
+            const centerIcon = document.querySelector('.center-icon');
+            const chatBody = document.getElementById('chat-body');
+            const questionList = document.getElementById('question-list');
+
+            chatForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const userInput = inputField.value.trim();
+                if (!userInput) return;
+
+                // Hide brilliance icon and "How can I help you today?" text
+                centerIcon.style.display = 'none';
+                howCanHelp.style.display = 'none';
+
+                // Append user message to chat body
+                const userMessage = document.createElement('div');
+                userMessage.classList.add('message', 'user-message');
+                userMessage.innerHTML = `
+                    <img src="https://img.icons8.com/ios/50/000000/user.png" class="user-icon">
+                    <div class="message-text">${userInput}</div>`;
+                chatBody.appendChild(userMessage);
+
+                // Append user input to question history
+                const questionItem = document.createElement('li');
+                questionItem.textContent = userInput;
+                questionList.appendChild(questionItem);
+
+                // Clear input field
+                inputField.value = '';
+
+                // Fetch response from backend
+                const botResponse = await fetch('/get-response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: userInput
+                    })
+                }).then(response => response.json());
+
+                // Append bot message to chat body
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('message', 'bot-message');
+                botMessage.innerHTML = `
+                    <img src="https://img.icons8.com/ios/50/000000/robot.png" class="bot-icon">
+                    <div class="message-text">${botResponse.response}</div>`;
+                chatBody.appendChild(botMessage);
+
+                // Scroll to bottom of chat body
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
+
+            // Accept user input when Enter key is pressed
+            inputField.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
